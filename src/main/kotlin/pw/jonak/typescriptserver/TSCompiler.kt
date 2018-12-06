@@ -1,6 +1,7 @@
 package pw.jonak.typescriptserver
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.withContext
 import pw.jonak.Subprocess
 import java.io.File
 import java.util.concurrent.Executors
@@ -37,7 +38,12 @@ class TSCompiler(nThreads: Int = 24) {
      */
     private fun doCompile(location: File): Pair<Boolean, String> {
         val tsc = Subprocess("tsc", "--pretty", workingDirectory = location.absolutePath)
-        tsc.waitForCompletion()
+        tsc.stdin.close()
+        
+        tsc.waitForCompletion(10)
+        if (tsc.alive) {
+            tsc.terminate()
+        }
 
         val output = tsc.stdout.readText()
         val success = tsc.exitCode == 0

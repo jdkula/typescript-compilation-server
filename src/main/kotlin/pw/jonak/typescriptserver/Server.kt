@@ -23,7 +23,8 @@ fun Application.module() {
 
     install(DefaultHeaders)
     install(CallLogging)
-    install(CORS) { // Make sure return information is receivable by the client.
+    install(CORS) {
+        // Make sure return information is receivable by the client.
         anyHost()
     }
     install(Routing) {
@@ -36,13 +37,17 @@ fun Application.module() {
                     return@post
                 }
 
-                if(!input.verifySecure()) {
+                if (!input.verifySecure()) {
                     notSecure()
                     return@post
                 }
 
                 val output = compiler.compile(input)
-                val htmlOutput = TSOutput(output.success, AhaAdapter.convertToHtml(output.result), output.files)
+                var html = AhaAdapter.convertToHtml(output.result)
+                if (html == "") {
+                    html = "<pre>${output.result}</pre>"
+                }
+                val htmlOutput = TSOutput(output.success, html, output.files)
                 call.respondText(Klaxon().toJsonString(htmlOutput), ContentType.Application.Json)
             } catch (e: KlaxonException) {
                 inputError()

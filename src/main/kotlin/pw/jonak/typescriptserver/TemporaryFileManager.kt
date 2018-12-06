@@ -3,7 +3,6 @@ package pw.jonak.typescriptserver
 import io.netty.util.internal.ConcurrentSet
 import java.io.File
 import java.io.IOException
-import java.nio.file.Paths
 import java.util.concurrent.atomic.AtomicInteger
 
 /** A very simple wrapper around temporary directory use. Created directories are marked for deletion on exit. */
@@ -17,7 +16,7 @@ object TemporaryFileManager {
         val name = count.getAndIncrement().toString()
         val file = File(name)
         if(!file.mkdir()) {
-            throw IOException("Can't make temporary directory")
+            throw IOException("Can't make temporary directory $name")
         }
         file.deleteOnExit()
         inUse.add(name)

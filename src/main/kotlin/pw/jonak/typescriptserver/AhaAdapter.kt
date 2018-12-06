@@ -12,7 +12,10 @@ object AhaAdapter {
         aha.stdin.flush()
         aha.stdin.close()
 
-        aha.waitForCompletion()
+        aha.waitForCompletion(3)
+        if(aha.alive) {
+            aha.terminate()
+        }
 
         return aha.stdout.readText()
     }
