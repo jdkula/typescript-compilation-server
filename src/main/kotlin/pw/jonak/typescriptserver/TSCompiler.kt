@@ -39,13 +39,13 @@ class TSCompiler(nThreads: Int = 24) {
     private fun doCompile(location: File): Pair<Boolean, String> {
         val tsc = Subprocess("tsc", "--pretty", workingDirectory = location.absolutePath)
         tsc.stdin.close()
-        
-        tsc.waitForCompletion(10)
+
+        tsc.waitForCompletion(60)
         if (tsc.alive) {
             tsc.terminate()
         }
 
-        val output = tsc.stdout.readText()
+        val output = try { tsc.stdout.readText() } catch(e: Exception) { "" }
         val success = tsc.exitCode == 0
         return Pair(success, output)
     }
